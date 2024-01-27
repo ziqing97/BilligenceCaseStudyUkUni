@@ -8,6 +8,7 @@ import os
 import math
 import copy
 import lib_extract_data as led
+from matplotlib import pyplot as plt 
 
 file = os.path.abspath('../data/TheGuardianRanking.xlsx')
 df = led.read_data_from_file(file)
@@ -33,3 +34,15 @@ df_condition = df_year.loc[condition,:]
 chosen_list = ['Aberdeen']
 condition = led.filter_choose(df, field, chosen_list)
 df_condition = df_year.loc[condition,:]
+
+# function trend
+fields_chosen = []
+institutions = []
+
+
+# divide data into institution class
+df_dict_in_institution = {}
+institutions =   df['Institution'].unique()
+for item in institutions:
+    df_temp = df[df['Institution'] == item]
+    df_dict_in_institution[item] = df_temp.reindex()
