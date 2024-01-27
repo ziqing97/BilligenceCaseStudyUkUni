@@ -82,3 +82,4 @@ for i,item1 in enumerate(fields_chosen):
         ax[i].set_xticklabels(time_plot)
         ax[i].legend(institutions_chosen)
 
+#%% prediction
