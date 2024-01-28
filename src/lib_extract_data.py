@@ -1,5 +1,6 @@
 import math
 import copy
+import numpy as np
 import pandas as pd
 
 def read_data_from_file(file):
@@ -43,3 +44,17 @@ def update_df(df):
     df_dict_in_institution = category_in_institution(df)
     fields = list(df.columns.values)
     return fields,df_dict_in_year,df_dict_in_institution
+
+def row_type_for_table(df,fields):
+    type_dict = {}
+    for item in fields:
+        if isinstance(df.loc[0,item],np.int64) or isinstance(df.loc[0,item],float):
+            type_dict[item] = {'type':'range'}
+            value_min = math.ceil(df.loc[:,item].min())
+            value_max = int(df.loc[:,item].max())
+            type_dict[item]['min'] = value_min
+            type_dict[item]['max'] = value_max
+        else:
+            type_dict[item] = {'type':'multiselect'}
+            type_dict[item]['values'] = df[item].unique()
+    return type_dict
