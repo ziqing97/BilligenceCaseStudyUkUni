@@ -8,9 +8,11 @@ import os
 import math
 import copy
 import pandas as pd
+import numpy as np
 import lib_extract_data as led
 from matplotlib import pyplot as plt 
 
+#%%
 file = os.path.abspath('../data/TheGuardianRanking.xlsx')
 df = led.read_data_from_file(file)
 
@@ -36,6 +38,7 @@ institutions_chosen = ['Aberdeen','UC Suffolk','Cambridge','Buckingham']
 fig,ax = plt.subplots(len(fields_chosen))
 time_plot = []
 for i,item1 in enumerate(fields_chosen):
+    fig,ax = plt.subplots()
     for j,item2 in enumerate(institutions_chosen):     
         data = df_dict_in_institution[item2][item1]
         time = df_dict_in_institution[item2]['Ranking Year']
@@ -52,19 +55,27 @@ for i,item1 in enumerate(fields_chosen):
             print(len(time))
             time_plot = time
         # plot
-        if len(fields_chosen) == 1:
-            ax.plot(time,data)
-        else:
-            ax[i].plot(time,data)
-    if len(fields_chosen) == 1:
-        ax.set_xticks(time_plot)
-        ax.set_xticklabels(time_plot)
-        ax.legend(fields_chosen)
-    else:
-        ax[i].set_xticks(time_plot)
-        ax[i].set_xticklabels(time_plot)
-        ax[i].legend(institutions_chosen)
+        ax.plot(time,data)
+    ax.set_xticks(time_plot)
+    ax.set_xticklabels(time_plot)
+    ax.legend(institutions_chosen)
+
 
 #%% prediction
 
 #%%
+def row_type_for_table(df,fields):
+    type_dict = {}
+    for item in fields:
+        if isinstance(df.loc[0,item],np.int64) or isinstance(df.loc[0,item],float):
+            type_dict[item] = {'type':'range'}
+            value_min = math.ceil(df.loc[:,item].min())
+            value_max = int(df.loc[:,item].max())
+            type_dict[item]['min'] = value_min
+            type_dict[item]['max'] = value_max
+        else:
+            type_dict[item] = {'type':'multiselect'}
+            type_dict[item]['values'] = df[item].unique()
+        return type_dict
+        
+        
