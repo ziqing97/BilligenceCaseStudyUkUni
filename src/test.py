@@ -15,14 +15,7 @@ file = os.path.abspath('../data/TheGuardianRanking.xlsx')
 df = led.read_data_from_file(file)
 
 #%% divide data into year class
-df_dict_in_year = {}
-years =   df['Ranking Year'].unique()
-for item in years:
-    df_temp = df[df['Ranking Year'] == item]
-    df_dict_in_year[item] = df_temp.reindex()
-
-fields = list(df.columns.values)
-
+fields,df_dict_in_year,df_dict_in_institution = led.update_df(df)
 # function range test
 vmin = 400
 vmax = 600
@@ -37,16 +30,6 @@ condition = led.filter_choose(df, field, chosen_list)
 df_condition = df_year.loc[condition,:]
 
 #%% function trend
-
-
-# divide data into institution class
-df_dict_in_institution = {}
-institutions =   df['Institution'].unique()
-for item in institutions:
-    df_temp = df[df['Institution'] == item]
-    df_temp = df_temp.sort_values(by='Ranking Year',ascending=True)
-    df_dict_in_institution[item] = df_temp.reindex()
-
 fields_chosen = ['Ranking','Value added score/10','Student:staff ratio']
 institutions_chosen = ['Aberdeen','UC Suffolk','Cambridge','Buckingham']
 
@@ -83,3 +66,5 @@ for i,item1 in enumerate(fields_chosen):
         ax[i].legend(institutions_chosen)
 
 #%% prediction
+
+#%%
