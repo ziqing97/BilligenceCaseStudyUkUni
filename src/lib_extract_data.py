@@ -21,3 +21,25 @@ def filter_choose(df,field,chosen_list):
     condition = df[field].isin(chosen_list_copy)
     return condition
     
+def category_in_institution(df):
+    df_dict_in_institution = {}
+    institutions =   df['Institution'].unique()
+    for item in institutions:
+        df_temp = df[df['Institution'] == item]
+        df_temp = df_temp.sort_values(by='Ranking Year',ascending=True)
+        df_dict_in_institution[item] = df_temp.reindex()
+    return df_dict_in_institution
+
+def category_in_year(df):
+    df_dict_in_year = {}
+    years =   df['Ranking Year'].unique()
+    for item in years:
+        df_temp = df[df['Ranking Year'] == item]
+        df_dict_in_year[item] = df_temp.reindex()
+    return df_dict_in_year
+
+def update_df(df):
+    df_dict_in_year = category_in_year(df)
+    df_dict_in_institution = category_in_institution(df)
+    fields = list(df.columns.values)
+    return fields,df_dict_in_year,df_dict_in_institution
