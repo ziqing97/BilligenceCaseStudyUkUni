@@ -5,10 +5,11 @@ Created on Sun Jan 28 13:47:32 2024
 @author: yuziq
 """
 import copy
+from datetime import datetime, date
 import PySimpleGUI as sg
-import lib_extract_data as led
 import pandas as pd
-from matplotlib import pyplot as plt 
+from matplotlib import pyplot as plt
+import lib_extract_data as led
 sg.theme("DarkBlue3")
 sg.set_options(font=("Microsoft JhengHei", 16))
 class BilligenceCaseStudy():
@@ -23,12 +24,12 @@ class BilligenceCaseStudy():
         layout_load = [  [sg.Text('Functions')],
                     [sg.Button('Load data'), sg.Button('Compare data in one year'),\
                      sg.Button('Compare trend'), sg.Button('Prediction')],\
-                    [sg.Button('Cancel')]]
-        
+                    [sg.Button('Exit')]]
+
         window = sg.Window('UK Uni Case Study', layout_load)
         while True:
-            event, values = window.read()
-            if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
+            event, _ = window.read()
+            if event == sg.WIN_CLOSED or event == 'Exit': # if user closes window or clicks cancel
                 break
             else:
                 if event == 'Load data':
@@ -44,7 +45,7 @@ class BilligenceCaseStudy():
         layout_load = [  [sg.Text('Load the data')],
                     [sg.Text('Give the data here'),sg.Input(),sg.FileBrowse()],
                     [sg.Button('Ok'), sg.Button('Cancel')] ]
-        
+
         window = sg.Window('UK Uni Case Study', layout_load)
         # Event Loop to process "events" and get the "values" of the inputs
         while True:
@@ -60,35 +61,35 @@ class BilligenceCaseStudy():
                 self.dataframe = dataframe_temp
             else:
                 pass
-                # self.dataframe = led.combine_df(self.dataframe,dataframe.temp)      
+                # self.dataframe = led.combine_df(self.dataframe,dataframe.temp)
             self.fields,self.df_dict_in_year,self.df_dict_in_institution = \
-                led.update_df(self.dataframe) 
+                led.update_df(self.dataframe)
             break
         window.close()
-    
+
     def gui_table_select_view(self):
         lst_year = sg.Combo(list(self.df_dict_in_year.keys()), \
-                            expand_x=True, enable_events=True, key='Ranking Year')
-        layout_table = [[sg.Text('Ranking Year:'),lst_year],
+                            expand_x=True, enable_events=True, key='Ranking Year',size=(4,1))
+        layout_table = [[sg.Text('Ranking Year:',size=(15,1)),lst_year],
                         [sg.Text('  ')]]
         table_type_dict = led.row_type_for_table(self.dataframe, self.fields)
 
         for item in self.fields:
-            if not (item == 'Ranking Year'):
+            if not item == 'Ranking Year':
                 if table_type_dict[item]['type'] == 'range':
-                    vmin = table_type_dict[item]['min']
-                    vmax = table_type_dict[item]['max']
-                    layout_table.append([sg.Text(item),\
-                                         sg.Text(f'Min (from {vmin})'),\
-                                             sg.Input(key=f'min_{item}',size=(5, 2)),\
-                                         sg.Text(f'Max (to {vmax})'),\
-                                             sg.Input(key=f'max_{item}',size=(5, 2)),])
+                    vmin = table_type_dict[item]['min'].round(2)
+                    vmax = table_type_dict[item]['max'].round(2)
+                    layout_table.append([sg.Text(f'{item}\t',size=(25,1)),\
+                                         sg.Text(f'Min (from {vmin})\t'),\
+                                             sg.Input(key=f'min_{item}',size=(4,1)),\
+                                         sg.Text(f'Max (to {vmax})\t'),\
+                                             sg.Input(key=f'max_{item}',size=(4,1)),])
                 '''elif table_type_dict[item]['type'] == 'multiselect':
                     names = table_type_dict[item]['values']
                     layout_table.append([sg.Text(item),sg.Listbox(names, \
                                 expand_y=True, enable_events=True, key=f'list_{item}')])'''
         layout_table.append([sg.Button('OK'),sg.Button('Cancel')])
-        window = sg.Window('UK Uni Case Study', layout_table)
+        window = sg.Window('UK Uni Case Study', layout_table, grab_anywhere=True)
         while True:
             event, values = window.read()
             if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
@@ -97,7 +98,7 @@ class BilligenceCaseStudy():
                 # generate the table
                 self.gui_table_view(table_type_dict, values)
         window.close()
-    
+
     def gui_table_view(self,table_type_dict,values):
         condition = led.filter_choose(self.dataframe,'Ranking Year',[values['Ranking Year']])
         for item in table_type_dict:
@@ -117,24 +118,46 @@ class BilligenceCaseStudy():
 
         df_present = self.dataframe.loc[condition,:]
         df_present = df_present.round(2)
-        values = df_present.values.tolist()
+        values2 = df_present.values.tolist()
         sg.theme("DarkBlue3")
-        sg.set_options(font=("Courier New", 12))
-        headings = self.fields
-        for item in headings:
-            item.replace(' ','\n')
-        layout = [[sg.Table(values = values, headings = headings,
-            # Set column widths for empty record of table
-            auto_size_columns=True,
-            col_widths=list(map(lambda x:len(x)+1, self.fields)))]]
-
-        window = sg.Window('Sample excel file',  layout)
+        sg.set_options(font=("Courier New", 10))
+        headings = copy.deepcopy(self.fields)
+        '''for i,item in enumerate(headings):
+            headings[i] = item.replace(' ','\n')'''
+        layout = [[sg.Table(values = values2, headings = headings,
+            selected_row_colors='red on yellow',
+            auto_size_columns=False,
+            # row_height=10,
+            enable_events=True,
+            expand_x=True,
+            expand_y=True,
+            col_widths=4,
+            key = 'table1')],
+            [sg.Text('Sorted by'), sg.Combo(self.fields,key='sortedelement'),\
+             sg.Text('Order'),sg.Combo(['Ascending','Descending'],key='order'),sg.Button('OK')],\
+             [sg.Button('Export')]]
+        ryear = values['Ranking Year']
+        window = sg.Window(f'Filtered data on {ryear}',  layout, size=(1600, 400), resizable=True)
         while True:
-            event, values = window.read()
+            event, values_sor = window.read()
+            # df_present = df_present.sort_values(by=values_sor[''],ascending=True)
             if event == sg.WIN_CLOSED:
                 break
+            elif event == 'OK':
+                order = values_sor['order']
+                if order == 'Ascending':
+                    df_present = df_present.sort_values(by=values_sor['sortedelement'],ascending=True)
+                else:
+                    df_present = df_present.sort_values(by=values_sor['sortedelement'],ascending=False)
+                values2 = df_present.values.tolist()
+                window['table1'].update(values=values2)
+            elif event == 'Export':
+                now = datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f'table_{now}.csv'
+                df_present.to_csv(filename)
+                continue
         window.close()
-    
+
     def gui_trend_view(self):
         fields_plot = copy.deepcopy(self.fields)
         fields_plot.remove('Ranking Year')
@@ -155,9 +178,9 @@ class BilligenceCaseStudy():
             elif event == 'OK':
                 time_plot = []
                 fields_chosen = values['factors']
-                for i,item1 in enumerate(fields_chosen):
+                for item1 in fields_chosen:
                     fig,ax = plt.subplots()
-                    for j,item2 in enumerate(values['institution']):     
+                    for item2 in values['institution']:
                         data = self.df_dict_in_institution[item2][item1]
                         time = self.df_dict_in_institution[item2]['Ranking Year']
                         # add previous ranking into ranking
@@ -179,8 +202,8 @@ class BilligenceCaseStudy():
                     ax.set_ylabel(item1)
                     ax.set_xlabel('Year')
                     fig.show()
-        window.close() 
-    
+        window.close()
+
     def gui_prediction_view(self):
         pass
 

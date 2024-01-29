@@ -11,13 +11,14 @@ def read_data_from_file(file):
 def filter_range(df,field,vmin,vmax):
     value_min = math.ceil(df.loc[:,field].min())
     value_max = int(df.loc[:,field].max())
-    if vmin<value_min or vmax>value_max:
+    print(f'min:{vmin},max:{vmax}')
+    '''if vmin<value_min or vmax>value_max:
         raise ValueError('invalid range')
-    else:
-        condition = (df.loc[:,field]>vmin) & (df.loc[:,field]<vmax)
-        return condition
+    else:'''
+    condition = (df.loc[:,field]>=vmin) & (df.loc[:,field]<=vmax)
+    return condition
 
-def filter_choose(df,field,chosen_list):
+def filter_choose(df,field,chosen_list): # ok
     chosen_list_copy = copy.deepcopy(chosen_list)
     condition = df[field].isin(chosen_list_copy)
     return condition
@@ -47,11 +48,12 @@ def update_df(df):
 
 def row_type_for_table(df,fields):
     type_dict = {}
+    df = df.reset_index()
     for item in fields:
         if isinstance(df.loc[0,item],np.int64) or isinstance(df.loc[0,item],float):
             type_dict[item] = {'type':'range'}
-            value_min = math.ceil(df.loc[:,item].min())
-            value_max = int(df.loc[:,item].max())
+            value_min = df.loc[:,item].min()
+            value_max = df.loc[:,item].max()
             type_dict[item]['min'] = value_min
             type_dict[item]['max'] = value_max
         else:
