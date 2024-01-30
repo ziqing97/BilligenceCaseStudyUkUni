@@ -9,13 +9,14 @@ def read_data_from_file(file):
     return df_file
 
 def filter_range(df,field,vmin,vmax):
+    '''
     value_min = math.ceil(df.loc[:,field].min())
     value_max = int(df.loc[:,field].max())
-    print(f'min:{vmin},max:{vmax}')
-    '''if vmin<value_min or vmax>value_max:
+    # print(f'min:{vmin},max:{vmax}')
+    if vmin<value_min or vmax>value_max:
         raise ValueError('invalid range')
     else:'''
-    condition = (df.loc[:,field]>=vmin) & (df.loc[:,field]<=vmax)
+    condition = ((df.loc[:,field]>=vmin) & (df.loc[:,field]<=vmax)) | (df.loc[:,field].isnull())
     return condition
 
 def filter_choose(df,field,chosen_list): # ok
