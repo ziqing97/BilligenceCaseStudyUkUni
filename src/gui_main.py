@@ -5,7 +5,7 @@ Created on Sun Jan 28 13:47:32 2024
 @author: yuziq
 """
 import copy
-from datetime import datetime, date
+from datetime import datetime
 import PySimpleGUI as sg
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -60,7 +60,15 @@ class BilligenceCaseStudy():
             if self.dataframe is None:
                 self.dataframe = dataframe_temp
             else:
-                pass
+                new_field = list(dataframe_temp.keys())
+                for item in new_field:
+                    if item == 'Ranking Year' or item == 'Institution':
+                        continue
+                    if item in self.dataframe.keys():
+                        dataframe_temp.rename(columns={item:f'{item}_new'},\
+                                              inplace=True)
+                self.dataframe = pd.merge(self.dataframe,dataframe_temp,\
+                                  on=['Ranking Year','Institution'],how='outer') 
                 # self.dataframe = led.combine_df(self.dataframe,dataframe.temp)
             self.fields,self.df_dict_in_year,self.df_dict_in_institution = \
                 led.update_df(self.dataframe)
