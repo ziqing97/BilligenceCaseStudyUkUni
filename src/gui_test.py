@@ -173,20 +173,3 @@ while True:
             fig.show()
 window.close()   
     
-#%%
-df = df_dict_in_year[2015]
-ff = fields[5]
-condition = led.filter_range(df, ff, 30, 100)
-'''vmin=1
-vmax=119
-field = 'Ranking'
-value_min = math.ceil(df.loc[:,field].min())
-value_max = int(df.loc[:,field].max())
-if vmin<value_min or vmax>value_max:
-    raise ValueError('invalid range')
-else:
-    condition = (df.loc[:,field]>=vmin) & (df.loc[:,field]<=vmax)'''
-if False in list(condition):
-    print(item)
-#%%
-df.loc[62,ff]>30
