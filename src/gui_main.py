@@ -23,7 +23,7 @@ class BilligenceCaseStudy():
     def main(self):
         layout_load = [  [sg.Text('Functions')],
                     [sg.Button('Load data'), sg.Button('Compare data in one year'),\
-                     sg.Button('Compare trend'), sg.Button('Prediction')],\
+                     sg.Button('Compare trend')],\
                     [sg.Button('Exit')]]
 
         window = sg.Window('UK Uni Case Study', layout_load)
@@ -154,9 +154,11 @@ class BilligenceCaseStudy():
             elif event == 'OK':
                 order = values_sor['order']
                 if order == 'Ascending':
-                    df_present = df_present.sort_values(by=values_sor['sortedelement'],ascending=True)
+                    df_present = df_present.sort_values(by=values_sor['sortedelement'],\
+                                                        ascending=True)
                 else:
-                    df_present = df_present.sort_values(by=values_sor['sortedelement'],ascending=False)
+                    df_present = df_present.sort_values(by=values_sor['sortedelement'],\
+                                                        ascending=False)
                 values2 = df_present.values.tolist()
                 window['table1'].update(values=values2)
             elif event == 'Export':
@@ -172,13 +174,13 @@ class BilligenceCaseStudy():
         fields_plot.remove('Institution')
         layout_trend = [[sg.Text('Select the Institutions'),\
                          sg.Listbox(list(self.df_dict_in_institution.keys()), \
-                         size=(20, 5),expand_y=True, enable_events=True,\
-                            select_mode=sg.LISTBOX_SELECT_MODE_EXTENDED, key='institution')],\
-                        [sg.Text('Select the factors'),sg.Listbox(fields_plot, \
-                         size=(20, 5),expand_y=True, enable_events=True,\
+                         size=(20, 10),expand_y=True, enable_events=True,\
+                            select_mode=sg.LISTBOX_SELECT_MODE_EXTENDED, key='institution'),\
+                        sg.Text('Select the factors'),sg.Listbox(fields_plot, \
+                         size=(20, 10),expand_y=True, enable_events=True,\
                             select_mode=sg.LISTBOX_SELECT_MODE_EXTENDED, key='factors')],
                         [sg.Button('OK'),sg.Button('Cancel')]]
-        window = sg.Window('Trend',  layout_trend)
+        window = sg.Window('Trend',  layout_trend,size=(1000, 400), resizable=True)
         while True:
             event, values = window.read()
             if event == sg.WIN_CLOSED or event == 'Cancel':
