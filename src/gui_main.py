@@ -13,6 +13,9 @@ import lib_extract_data as led
 sg.theme("DarkBlue3")
 sg.set_options(font=("Microsoft JhengHei", 16))
 class BilligenceCaseStudy():
+    '''
+    Class for the whole mini project
+    '''
     def __init__(self):
         self.dataframe = None
         self.fields = []
@@ -21,6 +24,9 @@ class BilligenceCaseStudy():
         self.main()
 
     def main(self):
+        '''
+        main gui framework
+        '''
         layout_load = [  [sg.Text('Functions')],
                     [sg.Button('Load data'), sg.Button('Compare data in one year'),\
                      sg.Button('Compare trend')],\
@@ -42,6 +48,9 @@ class BilligenceCaseStudy():
         window.close()
 
     def gui_read_data(self):
+        '''
+        gui window for loading data
+        '''
         layout_load = [  [sg.Text('Load the data')],
                     [sg.Text('Give the data here'),sg.Input(),sg.FileBrowse()],
                     [sg.Button('Ok'), sg.Button('Cancel')] ]
@@ -68,7 +77,7 @@ class BilligenceCaseStudy():
                         dataframe_temp.rename(columns={item:f'{item}_new'},\
                                               inplace=True)
                 self.dataframe = pd.merge(self.dataframe,dataframe_temp,\
-                                  on=['Ranking Year','Institution'],how='outer') 
+                                  on=['Ranking Year','Institution'],how='outer')
                 # self.dataframe = led.combine_df(self.dataframe,dataframe.temp)
             self.fields,self.df_dict_in_year,self.df_dict_in_institution = \
                 led.update_df(self.dataframe)
@@ -76,6 +85,9 @@ class BilligenceCaseStudy():
         window.close()
 
     def gui_table_select_view(self):
+        '''
+        gui window for selecting table elements
+        '''
         lst_year = sg.Combo(list(self.df_dict_in_year.keys()), \
                             expand_x=True, enable_events=True, key='Ranking Year',size=(4,1))
         layout_table = [[sg.Text('Ranking Year:',size=(15,1)),lst_year],
@@ -92,10 +104,6 @@ class BilligenceCaseStudy():
                                              sg.Input(key=f'min_{item}',size=(4,1)),\
                                          sg.Text(f'Max (to {vmax})\t'),\
                                              sg.Input(key=f'max_{item}',size=(4,1)),])
-                '''elif table_type_dict[item]['type'] == 'multiselect':
-                    names = table_type_dict[item]['values']
-                    layout_table.append([sg.Text(item),sg.Listbox(names, \
-                                expand_y=True, enable_events=True, key=f'list_{item}')])'''
         layout_table.append([sg.Button('OK'),sg.Button('Cancel')])
         window = sg.Window('UK Uni Case Study', layout_table, grab_anywhere=True)
         while True:
@@ -108,6 +116,9 @@ class BilligenceCaseStudy():
         window.close()
 
     def gui_table_view(self,table_type_dict,values):
+        '''
+        gui window for table presentation
+        '''
         condition = led.filter_choose(self.dataframe,'Ranking Year',[values['Ranking Year']])
         for item in table_type_dict:
             if item == 'Ranking Year':
@@ -130,8 +141,6 @@ class BilligenceCaseStudy():
         sg.theme("DarkBlue3")
         sg.set_options(font=("Courier New", 10))
         headings = copy.deepcopy(self.fields)
-        '''for i,item in enumerate(headings):
-            headings[i] = item.replace(' ','\n')'''
         layout = [[sg.Table(values = values2, headings = headings,
             selected_row_colors='red on yellow',
             auto_size_columns=False,
@@ -169,6 +178,9 @@ class BilligenceCaseStudy():
         window.close()
 
     def gui_trend_view(self):
+        '''
+        gui window for choosing trend plot elements
+        '''
         fields_plot = copy.deepcopy(self.fields)
         fields_plot.remove('Ranking Year')
         fields_plot.remove('Institution')
@@ -213,9 +225,6 @@ class BilligenceCaseStudy():
                     ax.set_xlabel('Year')
                     fig.show()
         window.close()
-
-    def gui_prediction_view(self):
-        pass
 
 if __name__ == '__main__':
     case = BilligenceCaseStudy()
