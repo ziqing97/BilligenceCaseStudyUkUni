@@ -56,5 +56,33 @@ df['Calculated Score'] = df['NSS Teaching (%)']*0.1 + \
                             df['tariff points'] *0.15 + df['Career prospects (%)']*0.15
 
 df2 = df[['Guardian score/100','Calculated Score']]
+
+#%%
+a1 = np.array(df['NSS Overall (%)'])
+a2 = np.array(df['Student:staff ratio'])
+corr_nssoverall_ssratio = np.corrcoef(a1, a2)
+
+a3 = np.array(df['NSS Feedback (%)'])
+corr_nssfb_ssratio = np.corrcoef(a3, a2)
+
+
+a4 = np.array(df['NSS Teaching (%)'])
+corr_nssteaching_ssratio = np.corrcoef(a4, a2)
+
+a5 = np.array(df['Value added score/10'])
+a6 = np.array(df['Career prospects (%)'])
+a7 = np.array(df['Entry Tariff'])
+a8 = np.array(df['Expenditure per student / 10'])
+corr_value_career = np.corrcoef(a5, a6)
+
+corr_teaching_overall = np.corrcoef(a1,a4)
+corr_feedback_overall = np.corrcoef(a1,a3)
+corr_tariff_value = np.corrcoef(a7,a5)
+corr_spend_ratio = np.corrcoef(a8,a2)
+#%%
+df_temp = df.iloc[:,5:14]
+df_corr = df_temp.corr()
 #%% prediction
 
+
+aa = np.array(df['NSS Overall (%)'])
