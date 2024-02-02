@@ -202,6 +202,8 @@ class BilligenceCaseStudy():
                 fields_chosen = values['factors']
                 for item1 in fields_chosen:
                     fig,ax = plt.subplots()
+                    fig.set_figwidth(15)
+                    fig.set_figheight(4)
                     for item2 in values['institution']:
                         data = self.df_dict_in_institution[item2][item1]
                         time = self.df_dict_in_institution[item2]['Ranking Year']
@@ -219,9 +221,10 @@ class BilligenceCaseStudy():
                         # plot
                         ax.plot(time,data)
                     ax.set_xticks(time_plot)
+                    ax.legend(values['institution'],loc='upper left')
                     ax.set_xticklabels(time_plot)
-                    ax.legend(values['institution'])
                     ax.set_ylabel(item1)
+                    ax.set_title(item1)
                     ax.set_xlabel('Year')
                     fig.show()
         window.close()
